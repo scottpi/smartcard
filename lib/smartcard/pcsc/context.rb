@@ -95,6 +95,37 @@ class Context
       groups_ptr.free
     end
   end
+
+  def usb_port_for_reader(reader)
+    begin
+      card = self.card(reader, :shared, :any)
+      begin
+        attrib = card[FFILib::Consts::SCARD_ATTR_CHANNEL_ID]
+        if attrib
+          ddddcccc = attrib.unpack('I')[0]
+          dddd = ddddcccc >> 16
+          if dddd == 0x0020
+            bus = (ddddcccc & 0xFF00) >> 8
+            device_address = ddddcccc & 0xFF
+            # return bus and device_address
+            return {bus: bus, device_address: device_address}
+          else
+            puts "Not a USB reader"
+          end
+        else
+          puts "Unable to get SCARD_ATTR_CHANNEL_ID"
+        end
+      ensure
+        card.disconnect if card
+      end
+    rescue Smartcard::PCSC::Exception => e
+      if e.message.include?("no_smartcard")
+        nil
+      else
+        raise e
+      end
+    end
+  end
   
   # Queries smart-card readers, blocking until a state change occurs.
   #

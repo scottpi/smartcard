@@ -42,6 +42,23 @@ class ContextTest < Test::Unit::TestCase
                       'each reader name should be a string'
     end    
   end
+
+  def test_usb_port_for_reader
+    readers = @context.readers
+    readers.each do |reader|
+      usb_port = @context.usb_port_for_reader(reader)
+      if usb_port
+        assert_operator usb_port, :kind_of?, Hash, 'usb_port should be a Hash'
+        assert_includes usb_port, :bus, 'usb_port should include :bus key'  
+        assert_includes usb_port, :device_address, 'usb_port should include :device_address key'
+        
+        assert_operator usb_port[:bus], :kind_of?, Integer, ':bus should be an Integer'
+        assert_operator usb_port[:device_address], :kind_of?, Integer, ':device_address should be an Integer'
+      else
+        assert_nil usb_port, 'usb_port should be nil for non-USB reader or no card present'
+      end
+    end
+  end
   
   def test_wait_for_status_change
     readers = @context.readers
