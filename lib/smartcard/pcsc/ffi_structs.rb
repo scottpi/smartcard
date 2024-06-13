@@ -33,7 +33,8 @@ module FFILib
            :current_state, Word,
            :event_state, Word,
            :atr_length, Word,
-           :atr, [:char, Consts::MAX_ATR_SIZE]
+           :atr, [:char, Consts::MAX_ATR_SIZE],
+           :usb_address, :pointer
   end
   
   # Low-level protocol information for APDU transmission and reception.

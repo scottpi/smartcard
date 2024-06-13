@@ -4,6 +4,7 @@
 
 require 'rubygems'
 require 'smartcard'
+require 'json'
 
 require 'test/unit'
 
@@ -20,6 +21,8 @@ class ReaderStatesTest < Test::Unit::TestCase
     @queries[0].atr = 'grreat success'
     @queries[0].reader_name = 'PC/SC Reader 0'
     @queries[1].reader_name = 'CCID Reader 1'
+    @queries[0].usb_address = { :bus => 1, :device_address => 2 }
+    @queries[1].usb_address = { :bus => 1, :device_address => 4 }
   end
   
   def teardown
@@ -64,6 +67,11 @@ class ReaderStatesTest < Test::Unit::TestCase
   def test_reader_names
     assert_equal 'PC/SC Reader 0', @queries[0].reader_name
     assert_equal 'CCID Reader 1', @queries[1].reader_name
+  end
+
+  def test_usb_address
+    assert_equal({ :bus => 1, :device_address => 2 }, @queries[0].usb_address)
+    assert_equal({ :bus => 1, :device_address => 4 }, @queries[1].usb_address)
   end
   
   def test_ack_changes

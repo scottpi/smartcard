@@ -5,6 +5,7 @@
 # License:: MIT
 
 require 'set'
+require 'json'
 
 # :nodoc: namespace
 module Smartcard::PCSC
@@ -167,6 +168,19 @@ class FFILib::ReaderStateQuery
   def reader_name=(new_name)
     self[:reader_name].free if self[:reader_name].kind_of? FFI::MemoryPointer
     self[:reader_name] = FFI::MemoryPointer.from_string new_name
+  end
+
+  def usb_address
+    if self[:usb_address].null?
+      nil
+    else
+      JSON.parse(self[:usb_address].read_string, symbolize_names: true) 
+    end
+  end
+
+  def usb_address=(new_usb_address)
+    self[:usb_address].free if self[:usb_address].kind_of? FFI::MemoryPointer
+    self[:usb_address] = FFI::MemoryPointer.from_string(new_usb_address.to_json)
   end
 
   # Packs an unpacked card state (symbol or set of symbols) into a number.
